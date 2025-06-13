@@ -14,6 +14,29 @@ model FormData {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   question  String
   answer    String
+  
+  // Relationship: One FormData can have zero or one Query
+  query     Query?
 
   @@map("form_data")
+}
+
+model Query {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String?
+  status      QueryStatus @default(OPEN)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Foreign key relationship
+  formDataId  String    @unique @db.Uuid
+  formData    FormData  @relation(fields: [formDataId], references: [id], onDelete: Cascade)
+
+  @@map("queries")
+}
+
+enum QueryStatus {
+  OPEN
+  RESOLVED
 }
