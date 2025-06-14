@@ -14,9 +14,13 @@ async function formDataRoutes(app: FastifyInstance) {
     Reply: ICountedFormData
   }>('', {
     async handler(req, reply) {
-      log.debug('get form data')
+      log.debug('get form data with related queries')
       try {
-        const formData = await prisma.formData.findMany({})
+        const formData = await prisma.formData.findMany({
+          include: {
+            query: true  // Include related query data
+          }
+        })
         reply.send({
           total: formData.length,
           formData,
