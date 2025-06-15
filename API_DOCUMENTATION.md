@@ -273,14 +273,6 @@ interface Query {
 
 ---
 
-## Rate Limiting
-
-Currently, no rate limiting is implemented.
-
-## CORS
-
-CORS is enabled for all origins (`*`) in development mode.
-
 ## Database
 
 The API uses PostgreSQL with Prisma ORM. The database includes:
