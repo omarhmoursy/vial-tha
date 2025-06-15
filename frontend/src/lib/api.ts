@@ -1,3 +1,7 @@
+/**
+ * API Client for Clinical Trial Query Management System
+ */
+
 import { 
   FormData, 
   Query, 
@@ -9,6 +13,7 @@ import {
 
 const API_BASE_URL = 'http://127.0.0.1:8080';
 
+/** Custom error class for API-related errors */
 class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -16,6 +21,7 @@ class ApiError extends Error {
   }
 }
 
+/** Generic fetch wrapper with error handling and JSON headers */
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
@@ -33,14 +39,15 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
   return response.json();
 }
 
+/** API client methods */
 export const api = {
-  // Get all form data with related queries
+  /** Fetch all form data with related query information */
   async getFormData(): Promise<FormData[]> {
     const response = await fetchApi<ApiResponse<FormDataResponse>>('/form-data');
     return response.data.formData;
   },
 
-  // Create a new query
+  /** Create a new query for a FormData record */
   async createQuery(data: CreateQueryRequest): Promise<Query> {
     const response = await fetchApi<ApiResponse<Query>>('/queries', {
       method: 'POST',
@@ -49,7 +56,7 @@ export const api = {
     return response.data;
   },
 
-  // Update an existing query
+  /** Update an existing query (primarily for resolution) */
   async updateQuery(id: string, data: UpdateQueryRequest): Promise<Query> {
     const response = await fetchApi<ApiResponse<Query>>(`/queries/${id}`, {
       method: 'PUT',
@@ -58,7 +65,7 @@ export const api = {
     return response.data;
   },
 
-  // Delete a query (bonus endpoint)
+  /** Delete a query (bonus feature) */
   async deleteQuery(id: string): Promise<void> {
     await fetchApi(`/queries/${id}`, {
       method: 'DELETE',

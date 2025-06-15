@@ -1,6 +1,18 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+/**
+ * Prisma Database Schema for Clinical Trial Query Management System
+ * 
+ * This schema defines the data model for managing clinical trial form data and associated queries.
+ * It supports the critical workflow of data quality management in clinical research.
+ * 
+ * Key Relationships:
+ * - FormData can have 0 or 1 Query (1:0..1 relationship)
+ * - This prevents duplicate queries per form data entry
+ * - Queries track the lifecycle from creation to resolution
+ */
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,32 +22,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * FormData Model
+ * 
+ * Represents individual form responses collected during clinical trials.
+ * Each record contains a question-answer pair that may require data quality review.
+ * 
+ * In clinical trials, form data represents critical patient information that must
+ * be accurate and complete for regulatory compliance and patient safety.
+ */
 model FormData {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  question  String
-  answer    String
+  /// Unique identifier for the form data entry
+  id       String @id @default(cuid())
   
-  // Relationship: One FormData can have zero or one Query
-  query     Query?
+  /// The question asked to the patient/participant
+  question String
+  
+  /// The answer provided by the patient/participant  
+  answer   String
+  
+  /// Optional associated query for data quality review
+  /// Uses optional 1:1 relationship (1:0..1) - each FormData can have at most one Query
+  query    Query?
 
   @@map("form_data")
 }
 
+/**
+ * Query Model
+ * 
+ * Represents data quality queries in the clinical trial system.
+ * Queries are created when data managers identify issues that need review or clarification.
+ * 
+ * Business Context:
+ * - Each query costs $28-$71 to resolve (industry standard)
+ * - Clinical trials can generate 10,000+ queries
+ * - Proper query management is crucial for patient safety and regulatory approval
+ */
 model Query {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title       String
-  description String?
-  status      QueryStatus @default(OPEN)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  /// Unique identifier for the query
+  id          String      @id @default(cuid())
   
-  // Foreign key relationship
-  formDataId  String    @unique @db.Uuid
-  formData    FormData  @relation(fields: [formDataId], references: [id], onDelete: Cascade)
+  /// Query title (typically matches the FormData question for context)
+  title       String
+  
+  /// Detailed description of the query or resolution notes
+  /// For open queries: describes what needs review
+  /// For resolved queries: contains resolution details
+  description String
+  
+  /// Current status of the query workflow
+  status      QueryStatus @default(OPEN)
+  
+  /// Audit trail: timestamp when query was created
+  createdAt   DateTime    @default(now()) @map("created_at")
+  
+  /// Audit trail: timestamp when query was last modified
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  
+  /// Foreign key relationship to the associated FormData
+  formDataId  String      @unique @map("form_data_id")
+  formData    FormData    @relation(fields: [formDataId], references: [id], onDelete: Cascade)
 
   @@map("queries")
 }
 
+/**
+ * QueryStatus Enum
+ * 
+ * Defines the possible states in the query resolution workflow:
+ * - OPEN: Query requires attention and resolution (red badge in UI)
+ * - RESOLVED: Query has been reviewed and resolved (green badge in UI)
+ * 
+ * This simple two-state model aligns with clinical trial best practices
+ * while keeping the workflow straightforward for data managers.
+ */
 enum QueryStatus {
   OPEN
   RESOLVED
