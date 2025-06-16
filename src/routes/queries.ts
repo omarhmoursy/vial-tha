@@ -175,7 +175,7 @@ async function queryRoutes(app: FastifyInstance) {
   }, async (req, reply) => {
     log.debug({ queryId: req.params.id }, 'Deleting query')
     try {
-      const { id } = req.params
+      const id = req.params.id!
 
       await prisma.query.delete({
         where: { id }
