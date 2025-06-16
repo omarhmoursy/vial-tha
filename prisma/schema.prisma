@@ -33,7 +33,7 @@ datasource db {
  */
 model FormData {
   /// Unique identifier for the form data entry
-  id       String @id @default(cuid())
+  id       String @id @default(uuid())
   
   /// The question asked to the patient/participant
   question String
@@ -61,7 +61,7 @@ model FormData {
  */
 model Query {
   /// Unique identifier for the query
-  id          String      @id @default(cuid())
+  id          String      @id @default(uuid())
   
   /// Query title (typically matches the FormData question for context)
   title       String
