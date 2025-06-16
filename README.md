@@ -31,7 +31,7 @@ The application is designed with the following key features:
 ## Getting Started
 
 1. **Clone the Repository**:
-   ```bash
+```bash
    git clone https://github.com/omarhmoursy/vial-tha.git
    cd vial-tha
    ```

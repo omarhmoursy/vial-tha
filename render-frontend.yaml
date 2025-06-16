@@ -1,0 +1,10 @@
+services:
+  # Frontend Web Service
+  - type: web
+    name: vial-query-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://vial-query-management-app.onrender.com 

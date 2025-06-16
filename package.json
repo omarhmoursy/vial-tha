@@ -30,7 +30,9 @@
     "start": "ts-node src/index.ts",
     "build": "tsc",
     "migrate": "docker exec -it vial-backend-api npx prisma migrate deploy",
+    "migrate:prod": "npx prisma migrate deploy",
     "seed": "docker exec -it vial-backend-api npx prisma db seed",
+    "seed:prod": "npx prisma db seed",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },

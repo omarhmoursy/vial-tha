@@ -5,7 +5,7 @@ services:
     env: docker
     dockerfilePath: ./Dockerfile.local
     plan: free
-    buildCommand: npm install && npx prisma generate
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy && npx prisma db seed
     startCommand: npm start
     envVars:
       - key: DATABASE_URL
