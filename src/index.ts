@@ -13,8 +13,13 @@ server.register(CORSConfig, {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 })
 
+// Health check endpoint for Render
+server.get('/health', async (request, reply) => {
+  return { status: 'OK', timestamp: new Date().toISOString() }
+})
+
 server
-  .listen({ port: 8080, host: '0.0.0.0' })
+  .listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
   .then(address => {
     console.log(`Server listening at ${address}`)
   })

@@ -1,6 +1,11 @@
 FROM node:18 as development
 
 WORKDIR /usr/app
-COPY . .
+COPY package*.json ./
 RUN npm install
+COPY . .
 RUN npx prisma generate
+
+EXPOSE 10000
+
+CMD ["npm", "run", "dev"]
