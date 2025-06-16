@@ -26,24 +26,22 @@ async function formDataRoutes(app: FastifyInstance) {
   /** GET /form-data - Fetch all form data with associated queries */
   app.get<{
     Reply: ICountedFormData
-  }>('', {
-    async handler(req, reply) {
-      log.debug('Fetching form data with query relationships')
-      try {
-        const formData = await prisma.formData.findMany({
-          include: {
-            query: true  // Include related Query object (null if no query exists)
-          }
-        })
-        reply.send({
-          total: formData.length,
-          formData,
-        })
-      } catch (err: any) {
-        log.error({ err }, 'Failed to fetch form data')
-        throw new ApiError('failed to fetch form data', 400)
-      }
-    },
+  }>('', async (req, reply) => {
+    log.debug('Fetching form data with query relationships')
+    try {
+      const formData = await prisma.formData.findMany({
+        include: {
+          query: true  // Include related Query object (null if no query exists)
+        }
+      })
+      reply.send({
+        total: formData.length,
+        formData,
+      })
+    } catch (err: any) {
+      log.error({ err }, 'Failed to fetch form data')
+      throw new ApiError('failed to fetch form data', 400)
+    }
   })
 }
 
