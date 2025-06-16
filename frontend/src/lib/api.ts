@@ -11,7 +11,11 @@ import {
   FormDataResponse 
 } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vial-query-management-app.onrender.com';
+/**
+ * Base API configuration
+ */
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vial-query-backend.onrender.com';
+
 
 /** Custom error class for API-related errors */
 class ApiError extends Error {
