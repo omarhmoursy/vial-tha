@@ -27,22 +27,6 @@ The application is designed with the following key features:
 - Delete queries (bonus feature)
 - Prevent duplicate queries per form data entry
 
-## Screenshots
-
-### Application Dashboard
-![Query Management Dashboard](screenshots/app.png)
-
-*The main dashboard showing form data with query status indicators and action buttons*
-
-### Create Query Modal
-![Create Query Modal](screenshots/create-query-modal.png)
-
-*Modal interface for creating new queries linked to form data entries*
-
-### Query Details Modal
-![Query Details Modal](screenshots/query-details-modal.png)
-
-*Modal showing query details with edit capabilities and status management*
 
 ## Getting Started
 
@@ -96,6 +80,6 @@ The application is designed with the following key features:
 
 ## Screenshot of the application:
 
-./screenshots/app.png
+![Query Management Dashboard](screenshots/app.png)
 
 
