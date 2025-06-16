@@ -30,9 +30,8 @@ const createQuerySchema = {
     },
     formDataId: {
       type: 'string',
-      pattern: '^[a-z0-9]+$', // base36 characters only
       minLength: 1,
-      maxLength: 32, // recommended max length for CUIDs
+      maxLength: 50, // Allow for both CUID and UUID formats
     },
   },
   additionalProperties: false,
@@ -61,9 +60,8 @@ const queryIdParamsSchema = {
   properties: {
     id: {
       type: 'string',
-      pattern: '^[a-z0-9]+$', // base36 characters only
       minLength: 1,
-      maxLength: 32, // recommended max length for CUIDs
+      maxLength: 50, // Allow for both CUID and UUID formats
     },
   },
   additionalProperties: false,
