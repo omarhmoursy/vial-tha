@@ -17,4 +17,4 @@ export interface IQueryResponse {
   createdAt: Date
   updatedAt: Date
   formDataId: string
-} 
+}

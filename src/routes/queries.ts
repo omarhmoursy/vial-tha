@@ -4,7 +4,11 @@
  */
 
 import { FastifyInstance } from 'fastify'
-import { ICreateQueryRequest, IUpdateQueryRequest, IQueryResponse } from './schemas/query.interface'
+import {
+  ICreateQueryRequest,
+  IUpdateQueryRequest,
+  IQueryResponse,
+} from './schemas/query.interface'
 import prisma from '../db/db_client'
 import { serializer } from './middleware/pre_serializer'
 import { ApiError } from '../errors'
@@ -17,21 +21,21 @@ const createQuerySchema = {
     title: {
       type: 'string',
       minLength: 1,
-      maxLength: 500
+      maxLength: 500,
     },
     description: {
       type: 'string',
       minLength: 1,
-      maxLength: 2000
+      maxLength: 2000,
     },
     formDataId: {
       type: 'string',
-      pattern: '^[a-z0-9]+$',  // base36 characters only
+      pattern: '^[a-z0-9]+$', // base36 characters only
       minLength: 1,
-      maxLength: 32  // recommended max length for CUIDs
-    }
+      maxLength: 32, // recommended max length for CUIDs
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 const updateQuerySchema = {
@@ -40,15 +44,15 @@ const updateQuerySchema = {
     description: {
       type: 'string',
       minLength: 1,
-      maxLength: 2000
+      maxLength: 2000,
     },
     status: {
       type: 'string',
-      enum: ['OPEN', 'RESOLVED']
-    }
+      enum: ['OPEN', 'RESOLVED'],
+    },
   },
   additionalProperties: false,
-  minProperties: 1
+  minProperties: 1,
 }
 
 const queryIdParamsSchema = {
@@ -57,22 +61,22 @@ const queryIdParamsSchema = {
   properties: {
     id: {
       type: 'string',
-      pattern: '^[a-z0-9]+$',  // base36 characters only
+      pattern: '^[a-z0-9]+$', // base36 characters only
       minLength: 1,
-      maxLength: 32  // recommended max length for CUIDs
-    }
+      maxLength: 32, // recommended max length for CUIDs
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 /**
  * Registers query management routes with the Fastify application
- * 
+ *
  * Architecture:
  * - Uses Fastify's built-in JSON schema validation for input validation
  * - Applies consistent response serialization
  * - Implements structured logging for monitoring
- * 
+ *
  * @param app - Fastify application instance
  */
 async function queryRoutes(app: FastifyInstance) {
@@ -86,112 +90,124 @@ async function queryRoutes(app: FastifyInstance) {
   app.post<{
     Body: ICreateQueryRequest
     Reply: IQueryResponse
-  }>('', {
-    schema: {
-      body: createQuerySchema
-    }
-  }, async (req, reply) => {
-    log.debug('Creating new query')
-    try {
-      const { title, description, formDataId } = req.body
+  }>(
+    '',
+    {
+      schema: {
+        body: createQuerySchema,
+      },
+    },
+    async (req, reply) => {
+      log.debug('Creating new query')
+      try {
+        const { title, description, formDataId } = req.body
 
-      // Validate FormData exists
-      const formData = await prisma.formData.findUnique({
-        where: { id: formDataId }
-      })
+        // Validate FormData exists
+        const formData = await prisma.formData.findUnique({
+          where: { id: formDataId },
+        })
 
-      if (!formData) {
-        throw new ApiError('FormData not found', 404)
-      }
-
-      // Prevent duplicate queries per FormData
-      const existingQuery = await prisma.query.findUnique({
-        where: { formDataId }
-      })
-
-      if (existingQuery) {
-        throw new ApiError('Query already exists for this FormData', 400)
-      }
-
-      const query = await prisma.query.create({
-        data: {
-          title,
-          description,
-          formDataId,
-          status: 'OPEN'
+        if (!formData) {
+          throw new ApiError('FormData not found', 404)
         }
-      })
 
-      reply.status(201).send(query)
-    } catch (err: any) {
-      log.error({ err }, 'Failed to create query')
-      if (err instanceof ApiError) {
-        throw err
+        // Prevent duplicate queries per FormData
+        const existingQuery = await prisma.query.findUnique({
+          where: { formDataId },
+        })
+
+        if (existingQuery) {
+          throw new ApiError('Query already exists for this FormData', 400)
+        }
+
+        const query = await prisma.query.create({
+          data: {
+            title,
+            description: description || '',
+            formDataId,
+            status: 'OPEN',
+          },
+        })
+
+        reply.status(201).send(query)
+      } catch (err: any) {
+        log.error({ err }, 'Failed to create query')
+        if (err instanceof ApiError) {
+          throw err
+        }
+        throw new ApiError('Failed to create query', 400)
       }
-      throw new ApiError('Failed to create query', 400)
     }
-  })
+  )
 
   /** PUT /queries/:id - Update an existing query */
   app.put<{
     Params: { id: string }
     Body: IUpdateQueryRequest
     Reply: IQueryResponse
-  }>('/:id', {
-    schema: {
-      params: queryIdParamsSchema,
-      body: updateQuerySchema
-    }
-  }, async (req, reply) => {
-    log.debug({ queryId: req.params.id }, 'Updating query')
-    try {
-      const { id } = req.params
-      const updateData = req.body
+  }>(
+    '/:id',
+    {
+      schema: {
+        params: queryIdParamsSchema,
+        body: updateQuerySchema,
+      },
+    },
+    async (req, reply) => {
+      log.debug({ queryId: req.params.id }, 'Updating query')
+      try {
+        const { id } = req.params
+        const updateData = req.body
 
-      const query = await prisma.query.update({
-        where: { id },
-        data: updateData
-      })
+        const query = await prisma.query.update({
+          where: { id },
+          data: updateData,
+        })
 
-      reply.send(query)
-    } catch (err: any) {
-      log.error({ err, queryId: req.params.id }, 'Failed to update query')
-      
-      if (err.code === 'P2025') {
-        throw new ApiError('Query not found', 404)
+        reply.send(query)
+      } catch (err: any) {
+        log.error({ err, queryId: req.params.id }, 'Failed to update query')
+
+        if (err.code === 'P2025') {
+          throw new ApiError('Query not found', 404)
+        }
+
+        throw new ApiError('Failed to update query', 400)
       }
-      
-      throw new ApiError('Failed to update query', 400)
     }
-  })
+  )
 
   /** DELETE /queries/:id - Delete a query (bonus feature) */
   app.delete<{
     Params: { id: string }
-  }>('/:id', {
-    schema: {
-      params: queryIdParamsSchema
-    }
-  }, async (req, reply) => {
-    log.debug({ queryId: req.params.id }, 'Deleting query')
-    try {
-      const id = req.params.id!
+  }>(
+    '/:id',
+    {
+      schema: {
+        params: queryIdParamsSchema,
+      },
+    },
+    async (req, reply) => {
+      log.debug({ queryId: req.params.id }, 'Deleting query')
+      try {
+        const id = req.params.id!
 
-      await prisma.query.delete({
-        where: { id }
-      })
+        await prisma.query.delete({
+          where: { id },
+        })
 
-      reply.status(204).send()
-    } catch (err: any) {
-      log.error({ err, queryId: req.params.id }, 'Failed to delete query')
-      
-      if (err.code === 'P2025') {
-        throw new ApiError('Query not found', 404)
+        reply.status(204).send()
+      } catch (err: any) {
+        log.error({ err, queryId: req.params.id }, 'Failed to delete query')
+
+        if (err.code === 'P2025') {
+          throw new ApiError('Query not found', 404)
+        }
+
+        throw new ApiError('Failed to delete query', 400)
       }
-      
-      throw new ApiError('Failed to delete query', 400)
     }
-  })
+  )
 }
 
-export default queryRoutes 
+export default queryRoutes

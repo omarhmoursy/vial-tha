@@ -1,12 +1,12 @@
 services:
   # Backend API Service
   - type: web
-    name: vial-query-management-app
+    name: vial-query-backend
     env: docker
     dockerfilePath: ./Dockerfile.local
     plan: free
     buildCommand: npm install && npx prisma generate
-    startCommand: npm run dev
+    startCommand: npm start
     envVars:
       - key: DATABASE_URL
         fromDatabase:

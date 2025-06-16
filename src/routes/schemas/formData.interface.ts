@@ -12,7 +12,7 @@ export interface IFormData {
   id: string
   question: string
   answer: string
-  query?: IQuery | null  // Optional query relationship
+  query?: IQuery | null // Optional query relationship
 }
 
 export interface ICountedFormData {

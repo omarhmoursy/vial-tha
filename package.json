@@ -27,6 +27,8 @@
   },
   "scripts": {
     "dev": "nodemon src/index.ts",
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
     "migrate": "docker exec -it vial-backend-api npx prisma migrate deploy",
     "seed": "docker exec -it vial-backend-api npx prisma db seed",
     "lint": "eslint src --ext .ts",

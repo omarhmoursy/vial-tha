@@ -12,10 +12,10 @@ import { ApiError } from '../errors'
 
 /**
  * Registers form data routes with the Fastify application
- * 
+ *
  * This module contains the enhanced form-data endpoint that was modified
  * to include Query relationships, supporting the query management workflow.
- * 
+ *
  * @param app - Fastify application instance
  */
 async function formDataRoutes(app: FastifyInstance) {
@@ -31,8 +31,8 @@ async function formDataRoutes(app: FastifyInstance) {
     try {
       const formData = await prisma.formData.findMany({
         include: {
-          query: true  // Include related Query object (null if no query exists)
-        }
+          query: true, // Include related Query object (null if no query exists)
+        },
       })
       reply.send({
         total: formData.length,

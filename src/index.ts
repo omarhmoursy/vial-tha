@@ -14,7 +14,7 @@ server.register(CORSConfig, {
 })
 
 // Health check endpoint for Render
-server.get('/health', async (request, reply) => {
+server.get('/health', async () => {
   return { status: 'OK', timestamp: new Date().toISOString() }
 })
 
