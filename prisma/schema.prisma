@@ -75,13 +75,13 @@ model Query {
   status      QueryStatus @default(OPEN)
   
   /// Audit trail: timestamp when query was created
-  createdAt   DateTime    @default(now()) @map("created_at")
+  createdAt   DateTime    @default(now())
   
   /// Audit trail: timestamp when query was last modified
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  updatedAt   DateTime    @updatedAt
   
   /// Foreign key relationship to the associated FormData
-  formDataId  String      @unique @map("form_data_id")
+  formDataId  String      @unique
   formData    FormData    @relation(fields: [formDataId], references: [id], onDelete: Cascade)
 
   @@map("queries")
