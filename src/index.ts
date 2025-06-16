@@ -18,8 +18,10 @@ server.get('/health', async (request, reply) => {
   return { status: 'OK', timestamp: new Date().toISOString() }
 })
 
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080
+
 server
-  .listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
+  .listen({ port, host: '0.0.0.0' })
   .then(address => {
     console.log(`Server listening at ${address}`)
   })
